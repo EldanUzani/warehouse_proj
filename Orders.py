@@ -36,12 +36,12 @@ class Orders:
             return 'Order saved'
         return order_valid.lacking
 
-    def update_order (order_id, order):
-        update_valid = Storage_Management.check_if_available(order.order_info)
+    def update_order (order_id, updated_order):
+        update_valid = Storage_Management.check_if_available(updated_order.order_info)
         if(update_valid.valid):
-            orders.update(order.order, Order.order_id == order_id) 
-            Order_Info.update_order(order_id, order.order_info)
-            Storage_Management.update(Orders_Info.get_order(order_id))
+            orders.update(updated_order.order, Order.order_id == order_id) 
+            Order_Info.update_order(order_id, updated_order.order_info)
+            Storage_Management.update(updated_order.order_info)
             return 'Updated'
         return update_valid.lacking
 
@@ -51,5 +51,5 @@ class Orders:
     def remove_order (order_id):
         orders.delete(Order.order_id == order_id)
         Order_Info.delete_order(order_id)
-        Storage_Management.update(Order_Info.get_order(order_id))
-        return True
+        Storage_Management.order_removed(Order_Info.get_order(order_id))
+        return 'Order Removed'
