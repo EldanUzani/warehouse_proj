@@ -11,7 +11,11 @@ class Orders_Info:
         orders_info.insert(order_info)
 
     def update_order(order_id, updated_order):
-        order_info.update(updated_order, Order_info.order_id == order_id)
+        order_info.update(updated_order, Order_Info.order_id == order_id)
 
     def remove_order(order_id):
         order_info.delete(Order_Info.order_id == order_id)
+
+    def get_order_info(order_id):
+        return order_info.get(Order_Info.order_id == order_id)
+    
