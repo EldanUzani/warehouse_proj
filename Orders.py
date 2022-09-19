@@ -37,16 +37,18 @@ class Orders:
         return order_valid.lacking
 
     def update_order (order_id, updated_order):
+        current_order = Order_Info.get_order_info(order_id)
+        Storage_Management.order_removed(current_order)
         update_valid = Storage_Management.check_if_available(updated_order.order_info)
+        
         if(update_valid.valid):
             orders.update(updated_order.order, Order.order_id == order_id) 
             Orders_Info.update_order(order_id, updated_order.order_info)
             Storage_Management.update(updated_order.order_info)
             return 'Updated'
-        return update_valid.lacking
 
-    def check_for_existing_order (order_name):
-        return True
+        Storage_Management.update(current_order)
+        return update_valid.lacking
 
     def remove_order (order_id):
         orders.delete(Order.order_id == order_id)
@@ -54,28 +56,21 @@ class Orders:
         Storage_Management.order_removed(Order_Info.get_order(order_id))
         return 'Order Removed'
 
-    def get_weekly_orders (date):
-        today = date().today()
-        week_ahead = timedelta(days = 7) + today
-        orders = orders.get(Order.order_shipping_date >= str(today) 
-                            and Order.order_shipping_date < str(week_ahead))
-        orders_info = Orders_Info.get_weekly_orders(today, week_ahead)
+    def get_order_by_date (first_date, second_date = ''):
+        if(second_date):
+            orders = orders.search(Order.order_shipping_date >= first_date 
+                                and Order.order_shipping_date < second_date)
+        else:
+            orders = order.search(Order.order_shipping_date == first_date)
+        
         for order in orders:
-            for order_info in orders_info:
-                if order_info.order_id == order.order_id:
-                    order.order_info = order_info
-                    orders_info.remove(order_info)
-                    break
-
+            order.order_info = Orders_Info.get_order_info(order.order_id)
+        
         return orders
 
-    def get_orders_by_date (date):
-        orders = orders.get(Order.order_shipping_date == date)
-        orders_info = Orders_Info.get_orders_by_date(date)
+
+    def get_order_by_customer_name(name):
+        orders = orders.search(Order.customer_name == name)
         for order in orders:
-            for order_info in orders_info:
-                if order_info.order_id == order.order_id:
-                    order.order_info = order_info
-                    orders_info.remove(order_info)
-                    break
+            order.order_info = Orders_Info.get_order_info(order.order_id)
         return orders
