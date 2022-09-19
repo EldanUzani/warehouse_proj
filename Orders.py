@@ -40,7 +40,7 @@ class Orders:
         update_valid = Storage_Management.check_if_available(updated_order.order_info)
         if(update_valid.valid):
             orders.update(updated_order.order, Order.order_id == order_id) 
-            Order_Info.update_order(order_id, updated_order.order_info)
+            Orders_Info.update_order(order_id, updated_order.order_info)
             Storage_Management.update(updated_order.order_info)
             return 'Updated'
         return update_valid.lacking
@@ -50,6 +50,32 @@ class Orders:
 
     def remove_order (order_id):
         orders.delete(Order.order_id == order_id)
-        Order_Info.delete_order(order_id)
+        Orders_Info.delete_order(order_id)
         Storage_Management.order_removed(Order_Info.get_order(order_id))
         return 'Order Removed'
+
+    def get_weekly_orders (date):
+        today = date().today()
+        week_ahead = timedelta(days = 7) + today
+        orders = orders.get(Order.order_shipping_date >= str(today) 
+                            and Order.order_shipping_date < str(week_ahead))
+        orders_info = Orders_Info.get_weekly_orders(today, week_ahead)
+        for order in orders:
+            for order_info in orders_info:
+                if order_info.order_id == order.order_id:
+                    order.order_info = order_info
+                    orders_info.remove(order_info)
+                    break
+
+        return orders
+
+    def get_orders_by_date (date):
+        orders = orders.get(Order.order_shipping_date == date)
+        orders_info = Orders_Info.get_orders_by_date(date)
+        for order in orders:
+            for order_info in orders_info:
+                if order_info.order_id == order.order_id:
+                    order.order_info = order_info
+                    orders_info.remove(order_info)
+                    break
+        return orders
