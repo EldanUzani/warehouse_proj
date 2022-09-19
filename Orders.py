@@ -23,17 +23,12 @@ order1_info = {
     'profiles': 20,
     'refrigeretaros':3,
     }
-storage = [
-    ('legs' , 2),
-    ('profiles' , 3)
-]
 
 order = {'order':order1, 'order_info': order1_info}
 
-
 class Orders:
     def new_order (order):
-        order_valid = Storage_Management.update(order.order_info)
+        order_valid = Storage_Management.update(order)
         if(order_valid.valid):
             orders.insert(order.order)
             Orders_Info.new_order(order.order_info)
@@ -43,12 +38,11 @@ class Orders:
     def update_order (order_id, updated_order):
         current_order = Order_Info.get_order_info(order_id)
         Storage_Management.order_removed(current_order)
-        update_valid = Storage_Management.check_if_available(updated_order.order_info)
+        update_valid = Storage_Management.update(updated_order)
         
         if(update_valid.valid):
             orders.update(updated_order.order, Order.order_id == order_id) 
             Orders_Info.update_order(order_id, updated_order.order_info)
-            Storage_Management.update(updated_order.order_info)
             return 'Updated'
 
         Storage_Management.update(current_order)
