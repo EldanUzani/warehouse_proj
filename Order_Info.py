@@ -18,4 +18,4 @@ class Orders_Info:
 
     def get_order_info(order_id):
         return order_info.get(Order_Info.order_id == order_id)
-    
+

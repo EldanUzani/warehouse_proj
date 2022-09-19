@@ -23,16 +23,20 @@ order1_info = {
     'profiles': 20,
     'refrigeretaros':3,
     }
+storage = [
+    ('legs' , 2),
+    ('profiles' , 3)
+]
 
 order = {'order':order1, 'order_info': order1_info}
 
+
 class Orders:
     def new_order (order):
-        order_valid = Storage_Management.check_if_available(order.order_info)
+        order_valid = Storage_Management.update(order.order_info)
         if(order_valid.valid):
             orders.insert(order.order)
             Orders_Info.new_order(order.order_info)
-            Storage_Management.update(order.order_info)
             return 'Order saved'
         return order_valid.lacking
 
